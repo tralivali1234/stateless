@@ -120,9 +120,7 @@ namespace Stateless.Tests
         [Fact]
         public void WhenTransitioningFromSubToSuperstate_SubstateEntryActionsExecuted()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             var executed = false;
             sub.AddEntryAction((t, a) => executed = true, Reflection.InvocationInfo.Create(null, "entryActionDescription"));
@@ -134,9 +132,7 @@ namespace Stateless.Tests
         [Fact]
         public void WhenTransitioningFromSubToSuperstate_SubstateExitActionsExecuted()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             var executed = false;
             sub.AddExitAction(t => executed = true, Reflection.InvocationInfo.Create(null, "exitActionDescription"));
@@ -148,9 +144,7 @@ namespace Stateless.Tests
         [Fact]
         public void WhenTransitioningToSuperFromSubstate_SuperEntryActionsNotExecuted()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             var executed = false;
             super.AddEntryAction((t, a) => executed = true, Reflection.InvocationInfo.Create(null, "entryActionDescription"));
@@ -162,9 +156,7 @@ namespace Stateless.Tests
         [Fact]
         public void WhenTransitioningFromSuperToSubstate_SuperExitActionsNotExecuted()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             var executed = false;
             super.AddExitAction(t => executed = true, Reflection.InvocationInfo.Create(null, "exitActionDescription"));
@@ -176,9 +168,7 @@ namespace Stateless.Tests
         [Fact]
         public void WhenEnteringSubstate_SuperEntryActionsExecuted()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             var executed = false;
             super.AddEntryAction((t, a) => executed = true, Reflection.InvocationInfo.Create(null, "entryActionDescription"));
@@ -190,9 +180,7 @@ namespace Stateless.Tests
         [Fact]
         public void WhenLeavingSubstate_SuperExitActionsExecuted()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             var executed = false;
             super.AddExitAction(t => executed = true, Reflection.InvocationInfo.Create(null, "exitActionDescription"));
@@ -262,9 +250,7 @@ namespace Stateless.Tests
         [Fact]
         public void WhenEnteringSubstate_SuperstateEntryActionsExecuteBeforeSubstate()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             int order = 0, subOrder = 0, superOrder = 0;
             super.AddEntryAction((t, a) => superOrder = order++, Reflection.InvocationInfo.Create(null, "entryActionDescription"));
@@ -277,9 +263,7 @@ namespace Stateless.Tests
         [Fact]
         public void WhenExitingSubstate_SubstateEntryActionsExecuteBeforeSuperstate()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             int order = 0, subOrder = 0, superOrder = 0;
             super.AddExitAction(t => superOrder = order++, Reflection.InvocationInfo.Create(null, "entryActionDescription"));
@@ -295,8 +279,8 @@ namespace Stateless.Tests
             var rep = CreateRepresentation(State.B);
 
             var falseConditions = new[] {
-                new Tuple<Func<bool>, string>(() => true, "1"),
-                new Tuple<Func<bool>, string>(() => false, "2")
+                new Tuple<Func<object[], bool>, string>((args) => true, "1"),
+                new Tuple<Func<object[], bool>, string>((args) => false, "2")
             };
 
             var transitionGuard = new StateMachine<State, Trigger>.TransitionGuard(falseConditions);
@@ -312,8 +296,8 @@ namespace Stateless.Tests
             var rep = CreateRepresentation(State.B);
 
             var trueConditions = new[] {
-                new Tuple<Func<bool>, string>(() => true, "1"),
-                new Tuple<Func<bool>, string>(() => true, "2")
+                new Tuple<Func<object[], bool>, string>(args => true, "1"),
+                new Tuple<Func<object[], bool>, string>(args => true, "2")
             };
 
             var transitionGuard = new StateMachine<State, Trigger>.TransitionGuard(trueConditions);
@@ -326,50 +310,44 @@ namespace Stateless.Tests
         [Fact]
         public void WhenTransitionExistAndSuperstateUnmetGuardConditions_FireNotPossible()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             var falseConditions = new[] {
-                new Tuple<Func<bool>, string>(() => true, "1"),
-                new Tuple<Func<bool>, string>(() => false, "2")
+                new Tuple<Func<object[], bool>, string>(args => true, "1"),
+                new Tuple<Func<object[], bool>, string>(args => false, "2")
             };
             var transitionGuard = new StateMachine<State, Trigger>.TransitionGuard(falseConditions);
             var transition = new StateMachine<State, Trigger>.TransitioningTriggerBehaviour(Trigger.X, State.C, transitionGuard);
             super.AddTriggerBehaviour(transition);
 
-            StateMachine<State, Trigger>.TriggerBehaviourResult result;
-            sub.TryFindHandler(Trigger.X, out result);
+            sub.TryFindHandler(Trigger.X, new object[0], out StateMachine<State, Trigger>.TriggerBehaviourResult result);
 
             Assert.False(sub.CanHandle(Trigger.X));
             Assert.False(super.CanHandle(Trigger.X));
             Assert.NotNull(result);
-            Assert.False(result?.Handler.GuardConditionsMet);
+            Assert.False(result?.Handler.GuardConditionsMet());
             Assert.Contains("2", result?.UnmetGuardConditions.ToArray());
             
         }
         [Fact]
         public void WhenTransitionExistSuperstateMetGuardConditions_CanBeFired()
         {
-            StateMachine<State, Trigger>.StateRepresentation super;
-            StateMachine<State, Trigger>.StateRepresentation sub;
-            CreateSuperSubstatePair(out super, out sub);
+            CreateSuperSubstatePair(out StateMachine<State, Trigger>.StateRepresentation super, out StateMachine<State, Trigger>.StateRepresentation sub);
 
             var trueConditions = new[] {
-                new Tuple<Func<bool>, string>(() => true, "1"),
-                new Tuple<Func<bool>, string>(() => true, "2")
+                new Tuple<Func<object[], bool>, string>(args => true, "1"),
+                new Tuple<Func<object[], bool>, string>(args => true, "2")
             };
             var transitionGuard = new StateMachine<State, Trigger>.TransitionGuard(trueConditions);
             var transition = new StateMachine<State, Trigger>.TransitioningTriggerBehaviour(Trigger.X, State.C, transitionGuard);
 
             super.AddTriggerBehaviour(transition);
-            StateMachine<State, Trigger>.TriggerBehaviourResult result;
-            sub.TryFindHandler(Trigger.X, out result);
+            sub.TryFindHandler(Trigger.X, new object[0], out StateMachine<State, Trigger>.TriggerBehaviourResult result);
 
             Assert.True(sub.CanHandle(Trigger.X));
             Assert.True(super.CanHandle(Trigger.X));
             Assert.NotNull(result);     
-            Assert.True(result?.Handler.GuardConditionsMet);
+            Assert.True(result?.Handler.GuardConditionsMet());
             Assert.False(result?.UnmetGuardConditions.Any());
 
         }
